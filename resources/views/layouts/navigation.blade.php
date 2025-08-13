@@ -28,9 +28,12 @@
                 <x-nav-link :href="route('pemain.index')" :active="request()->routeIs('pemain.*')">
                     {{ __('Pemain') }}
                 </x-nav-link>
-                {{-- ===== TAMBAHKAN BARIS INI ===== --}}
                 <x-nav-link :href="route('pertandingan.index')" :active="request()->routeIs('pertandingan.*')">
                     {{ __('Pertandingan') }}
+                </x-nav-link>
+                {{-- ===== TAMBAHKAN BARIS INI ===== --}}
+                <x-nav-link :href="route('klasemen.index')" :active="request()->routeIs('klasemen.index')">
+                    {{ __('Klasemen') }}
                 </x-nav-link>
             </div>
 
@@ -136,6 +139,14 @@
         <!-- Untuk Mobile -->
         <x-responsive-nav-link :href="route('pertandingan.index')" :active="request()->routeIs('pertandingan.*')">
             {{ __('Pertandingan') }}
+        </x-responsive-nav-link>
+
+                <x-nav-link :href="route('klasemen.index')" :active="request()->routeIs('klasemen.index')">
+            {{ __('Klasemen') }}
+        </x-nav-link>
+
+        <x-responsive-nav-link :href="route('klasemen.index')" :active="request()->routeIs('klasemen.index')">
+            {{ __('Klasemen') }}
         </x-responsive-nav-link>
     </div>
 </nav>

@@ -6,10 +6,12 @@ use App\Http\Controllers\KlubController;
 use App\Http\Controllers\PemainController;
 use App\Http\Controllers\PertandinganController;
 use App\Http\Controllers\PertandinganStatistikController;
-
+use App\Http\Controllers\KlasemenController;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/klasemen', [KlasemenController::class, 'index'])->name('klasemen.index');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
