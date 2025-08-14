@@ -35,6 +35,9 @@
                 <x-nav-link :href="route('klasemen.index')" :active="request()->routeIs('klasemen.index')">
                     {{ __('Klasemen') }}
                 </x-nav-link>
+                 <x-nav-link :href="route('liga.index')" :active="request()->routeIs('liga.*')">
+        {{ __('Liga') }}
+    </x-nav-link>
             </div>
 
             <!-- Settings Dropdown -->
@@ -148,5 +151,9 @@
         <x-responsive-nav-link :href="route('klasemen.index')" :active="request()->routeIs('klasemen.index')">
             {{ __('Klasemen') }}
         </x-responsive-nav-link>
+         <x-responsive-nav-link :href="route('liga.index')" :active="request()->routeIs('liga.*')">
+        {{ __('Liga') }}
+    </x-responsive-nav-link>
+        
     </div>
 </nav>

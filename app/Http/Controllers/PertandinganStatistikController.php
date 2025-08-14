@@ -3,99 +3,71 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gol;
-use App\Models\Klub;
 use App\Models\Kartu;
 use App\Models\Pemain;
 use App\Models\Pertandingan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PertandinganStatistikController extends Controller
 {
-    /**
-     * Menampilkan halaman untuk mengelola skor dan statistik pertandingan.
-     */
     public function edit(Pertandingan $pertandingan)
     {
-        // Ambil semua pemain dari kedua klub yang bertanding
         $pemains = Pemain::where('klub_id', $pertandingan->klub_tuan_rumah_id)
                          ->orWhere('klub_id', $pertandingan->klub_tamu_id)
                          ->orderBy('nama_pemain')
                          ->get();
 
-        // Ambil data statistik yang sudah ada
-        $gols = $pertandingan->gols()->with(['pemain', 'assistPemain'])->get();
+        $pertandingan->load(['gols.pemain', 'gols.assistPemain', 'kartus.pemain']);
 
-        $kartus = $pertandingan->kartus()->with('pemain')->get();
-
-        return view('pertandingan.statistik', compact('pertandingan', 'pemains', 'gols', 'kartus'));
+        return view('pertandingan.statistik', compact('pertandingan', 'pemains'));
     }
 
-    /**
-     * Update skor utama pertandingan.
-     */
-    public function updateSkor(Request $request, Pertandingan $pertandingan)
+    public function update(Request $request, Pertandingan $pertandingan)
     {
-        $request->validate([
+        $validated = $request->validate([
             'skor_tuan_rumah' => 'required|integer|min:0',
             'skor_tamu' => 'required|integer|min:0',
+            'gols' => 'nullable|array',
+            'gols.*.pemain_id' => 'required|exists:pemains,id',
+            'gols.*.assist_pemain_id' => 'nullable|exists:pemains,id|different:gols.*.pemain_id',
+            'gols.*.menit_gol' => 'required|integer|min:1',
+            'kartus' => 'nullable|array',
+            'kartus.*.pemain_id' => 'required|exists:pemains,id',
+            'kartus.*.jenis_kartu' => 'required|in:kuning,merah',
+            'kartus.*.menit_kartu' => 'required|integer|min:1',
         ]);
 
-        $pertandingan->update($request->only(['skor_tuan_rumah', 'skor_tamu']));
+        try {
+            DB::transaction(function () use ($validated, $pertandingan) {
+                // 1. Update Skor Utama
+                $pertandingan->update([
+                    'skor_tuan_rumah' => $validated['skor_tuan_rumah'],
+                    'skor_tamu' => $validated['skor_tamu'],
+                ]);
 
-        return back()->with('success', 'Skor berhasil diperbarui!');
+                // 2. Hapus semua statistik lama
+                $pertandingan->gols()->delete();
+                $pertandingan->kartus()->delete();
+
+                // 3. Masukkan kembali data gol dari form
+                if (!empty($validated['gols'])) {
+                    foreach ($validated['gols'] as $golData) {
+                        $pertandingan->gols()->create($golData);
+                    }
+                }
+
+                // 4. Masukkan kembali data kartu dari form
+                if (!empty($validated['kartus'])) {
+                    foreach ($validated['kartus'] as $kartuData) {
+                        $pertandingan->kartus()->create($kartuData);
+                    }
+                }
+            });
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage());
+        }
+
+        return redirect()->route('pertandingan.index')->with('success', 'Statistik pertandingan berhasil disimpan!');
     }
-
-    /**
-     * Menyimpan data gol baru.
-     */
-    public function storeGol(Request $request, Pertandingan $pertandingan)
-    {
-        $request->validate([
-            'pemain_id' => 'required|exists:pemains,id',
-            'assist_pemain_id' => 'nullable|exists:pemains,id|different:pemain_id',
-            'menit_gol' => 'required|integer|min:1',
-        ]);
-
-        $pertandingan->gols()->create($request->all());
-
-        return back()->with('success', 'Data gol berhasil ditambahkan!');
-    }
-
-    /**
-     * Menghapus data gol.
-     */
-    public function destroyGol(Gol $gol)
-    {
-        $gol->delete();
-        return back()->with('success', 'Data gol berhasil dihapus.');
-    }
-
-    // app/Http/Controllers/PertandinganStatistikController.php
-
-// ... (method destroyGol yang sudah ada) ...
-
-/**
- * Menyimpan data kartu baru.
- */
-public function storeKartu(Request $request, Pertandingan $pertandingan)
-{
-    $request->validate([
-        'pemain_id' => 'required|exists:pemains,id',
-        'jenis_kartu' => 'required|in:kuning,merah',
-        'menit_kartu' => 'required|integer|min:1',
-    ]);
-
-    $pertandingan->kartus()->create($request->all());
-
-    return back()->with('success', 'Data kartu berhasil ditambahkan!');
-}
-
-/**
- * Menghapus data kartu.
- */
-public function destroyKartu(Kartu $kartu)
-{
-    $kartu->delete();
-    return back()->with('success', 'Data kartu berhasil dihapus.');
-}
 }

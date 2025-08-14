@@ -12,6 +12,20 @@
                     <h3 class="text-lg font-medium text-gray-900 mb-4">
                         Klasemen Sementara
                     </h3>
+
+                    <div class="mb-4">
+                        <form action="{{ route('klasemen.index') }}" method="GET">
+                            <select name="liga_id" class="border-gray-300 rounded-md shadow-sm" onchange="this.form.submit()">
+                                <option value="">Semua Liga</option>
+                                @foreach ($ligas as $liga)
+                                    <option value="{{ $liga->id }}" {{ $selectedLigaId == $liga->id ? 'selected' : '' }}>
+                                        {{ $liga->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+                    </div>
+
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">

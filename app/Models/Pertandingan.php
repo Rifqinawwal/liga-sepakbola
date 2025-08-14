@@ -15,12 +15,14 @@ class Pertandingan extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'klub_tuan_rumah_id',
-        'klub_tamu_id',
-        'tanggal_pertandingan',
-        'skor_tuan_rumah',
-        'skor_tamu',
-    ];
+    'klub_tuan_rumah_id',
+    'klub_tamu_id',
+    'tanggal_pertandingan',
+    'stadion', 
+    'liga',   
+    'skor_tuan_rumah',
+    'skor_tamu',
+];
 
     /**
      * Mendapatkan data klub tuan rumah.
@@ -34,6 +36,10 @@ class Pertandingan extends Model
     public function gols() { return $this->hasMany(Gol::class); }
     public function kartus() { return $this->hasMany(Kartu::class); }
     public function pergantians() { return $this->hasMany(Pergantian::class); }
+    public function liga() // <-- Tambahkan relasi ini
+{
+    return $this->belongsTo(Liga::class);
+}
 
     /**
      * Mendapatkan data klub tamu.

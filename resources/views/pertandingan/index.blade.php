@@ -40,8 +40,25 @@
                                     <td class="px-6 py-4 text-sm text-gray-500">
                                         {{ \Carbon\Carbon::parse($match->tanggal_pertandingan)->format('d M Y') }}
                                     </td>
-                                    <td class="px-6 py-4 font-medium text-gray-900 text-center">
-                                        {{ $match->klubTuanRumah->nama }} vs {{ $match->klubTamu->nama }}
+                                    {{-- Kolom Pertandingan dengan Logo --}}
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center justify-center space-x-4">
+                                            <span class="font-medium text-gray-900 text-right">{{ $match->klubTuanRumah->nama }}</span>
+                                            @if($match->klubTuanRumah->logo)
+                                                <img src="{{ asset($match->klubTuanRumah->logo) }}" alt="{{ $match->klubTuanRumah->nama }}" class="h-8 w-8 object-contain">
+                                            @else
+                                                <div class="h-8 w-8 bg-gray-200 rounded-full"></div>
+                                            @endif
+                                    
+                                            <span class="text-gray-500">vs</span>
+                                    
+                                            @if($match->klubTamu->logo)
+                                                <img src="{{ asset($match->klubTamu->logo) }}" alt="{{ $match->klubTamu->nama }}" class="h-8 w-8 object-contain">
+                                            @else
+                                                <div class="h-8 w-8 bg-gray-200 rounded-full"></div>
+                                            @endif
+                                            <span class="font-medium text-gray-900 text-left">{{ $match->klubTamu->nama }}</span>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 text-right text-sm font-medium">
                                         <a href="{{ route('pertandingan.statistik.edit', $match->id) }}" class="text-indigo-600 hover:text-indigo-900">
@@ -89,8 +106,25 @@
                                     <td class="px-6 py-4 text-sm text-gray-500">
                                         {{ \Carbon\Carbon::parse($match->tanggal_pertandingan)->format('d M Y') }}
                                     </td>
-                                    <td class="px-6 py-4 font-medium text-gray-900 text-center">
-                                        {{ $match->klubTuanRumah->nama }} vs {{ $match->klubTamu->nama }}
+                                    {{-- Kolom Pertandingan dengan Logo --}}
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center justify-center space-x-4">
+                                            <span class="font-medium text-gray-900 text-right">{{ $match->klubTuanRumah->nama }}</span>
+                                            @if($match->klubTuanRumah->logo)
+                                                <img src="{{ asset($match->klubTuanRumah->logo) }}" alt="{{ $match->klubTuanRumah->nama }}" class="h-8 w-8 object-contain">
+                                            @else
+                                                <div class="h-8 w-8 bg-gray-200 rounded-full"></div>
+                                            @endif
+                                    
+                                            <span class="text-gray-500">vs</span>
+                                    
+                                            @if($match->klubTamu->logo)
+                                                <img src="{{ asset($match->klubTamu->logo) }}" alt="{{ $match->klubTamu->nama }}" class="h-8 w-8 object-contain">
+                                            @else
+                                                <div class="h-8 w-8 bg-gray-200 rounded-full"></div>
+                                            @endif
+                                            <span class="font-medium text-gray-900 text-left">{{ $match->klubTamu->nama }}</span>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 text-center font-bold text-lg">
                                         {{ $match->skor_tuan_rumah }} - {{ $match->skor_tamu }}

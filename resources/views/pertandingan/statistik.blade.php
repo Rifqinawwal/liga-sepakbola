@@ -6,165 +6,116 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <form action="{{ route('pertandingan.statistik.update', $pertandingan->id) }}" method="POST">
+                @csrf
+                @method('PUT')
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="text-center">
-                    <h3 class="text-2xl font-bold">{{ $pertandingan->klubTuanRumah->nama }} vs {{ $pertandingan->klubTamu->nama }}</h3>
-                    <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($pertandingan->tanggal_pertandingan)->format('l, d F Y') }}</p>
-                    @if (session('success'))
-                        <div class="mt-4 p-4 bg-green-100 text-green-700 border border-green-400 rounded max-w-xl mx-auto">
-                            {{ session('success') }}
+                <div class="space-y-6">
+                    <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                        <div class="text-center">
+                            <h3 class="text-2xl font-bold">{{ $pertandingan->klubTuanRumah->nama }} vs {{ $pertandingan->klubTamu->nama }}</h3>
+                            <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($pertandingan->tanggal_pertandingan)->format('l, d F Y') }}</p>
+                            @if (session('error'))
+                                <div class="mt-4 p-4 bg-red-100 text-red-700 border border-red-400 rounded max-w-xl mx-auto">{{ session('error') }}</div>
+                            @endif
                         </div>
-                    @endif
-                     @if ($errors->any())
-                        <div class="mt-4 p-4 bg-red-100 text-red-700 border border-red-400 rounded max-w-xl mx-auto text-left">
-                            <p class="font-bold">Oops! Ada kesalahan:</p>
-                            <ul class="list-disc list-inside">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                    </div>
+
+                    <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Skor Akhir</h3>
+                        <div class="grid grid-cols-2 gap-4 items-center">
+                            <div class="text-center">
+                                <x-input-label for="skor_tuan_rumah" :value="__($pertandingan->klubTuanRumah->nama)" />
+                                <x-text-input id="skor_tuan_rumah" class="block mt-1 w-full text-center" type="number" name="skor_tuan_rumah" :value="old('skor_tuan_rumah', $pertandingan->skor_tuan_rumah)" required />
+                            </div>
+                            <div class="text-center">
+                                <x-input-label for="skor_tamu" :value="__($pertandingan->klubTamu->nama)" />
+                                <x-text-input id="skor_tamu" class="block mt-1 w-full text-center" type="number" name="skor_tamu" :value="old('skor_tamu', $pertandingan->skor_tamu)" required />
+                            </div>
                         </div>
-                    @endif
+                    </div>
+
+                    <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Pencetak Gol</h3>
+                            <button type="button" id="tambah-gol" class="text-sm font-semibold text-indigo-600 hover:text-indigo-800">+ Tambah Baris Gol</button>
+                        </div>
+                        <div id="daftar-gol" class="space-y-3">
+                            @foreach($pertandingan->gols as $gol)
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center gol-row">
+                                <div><select name="gols[{{$loop->index}}][pemain_id]" class="block w-full border-gray-300 rounded-md shadow-sm"><option value="">Pencetak Gol</option>@foreach($pemains as $pemain)<option value="{{ $pemain->id }}" {{$gol->pemain_id == $pemain->id ? 'selected' : ''}}>{{$pemain->nama_pemain}}</option>@endforeach</select></div>
+                                <div><select name="gols[{{$loop->index}}][assist_pemain_id]" class="block w-full border-gray-300 rounded-md shadow-sm"><option value="">Pemberi Assist</option>@foreach($pemains as $pemain)<option value="{{ $pemain->id }}" {{$gol->assist_pemain_id == $pemain->id ? 'selected' : ''}}>{{$pemain->nama_pemain}}</option>@endforeach</select></div>
+                                <div><x-text-input type="number" name="gols[{{$loop->index}}][menit_gol]" value="{{$gol->menit_gol}}" class="block w-full" placeholder="Menit ke-" /></div>
+                                <div><button type="button" class="text-red-500 hover:text-red-700 text-sm font-semibold remove-row">Hapus</button></div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Kartu</h3>
+                            <button type="button" id="tambah-kartu" class="text-sm font-semibold text-indigo-600 hover:text-indigo-800">+ Tambah Baris Kartu</button>
+                        </div>
+                        <div id="daftar-kartu" class="space-y-3">
+                            @foreach($pertandingan->kartus as $kartu)
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center kartu-row">
+                                <div><select name="kartus[{{$loop->index}}][pemain_id]" class="block w-full border-gray-300 rounded-md shadow-sm"><option value="">Pilih Pemain</option>@foreach($pemains as $pemain)<option value="{{ $pemain->id }}" {{$kartu->pemain_id == $pemain->id ? 'selected' : ''}}>{{$pemain->nama_pemain}}</option>@endforeach</select></div>
+                                <div><select name="kartus[{{$loop->index}}][jenis_kartu]" class="block w-full border-gray-300 rounded-md shadow-sm"><option value="kuning" {{$kartu->jenis_kartu == 'kuning' ? 'selected' : ''}}>Kuning</option><option value="merah" {{$kartu->jenis_kartu == 'merah' ? 'selected' : ''}}>Merah</option></select></div>
+                                <div><x-text-input type="number" name="kartus[{{$loop->index}}][menit_kartu]" value="{{$kartu->menit_kartu}}" class="block w-full" placeholder="Menit ke-" /></div>
+                                <div><button type="button" class="text-red-500 hover:text-red-700 text-sm font-semibold remove-row">Hapus</button></div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg flex justify-end items-center">
+                         <a href="{{ route('pertandingan.index') }}" class="text-sm text-gray-600 hover:text-gray-900 mr-4">Batal</a>
+                        <x-primary-button>{{ __('Simpan Semua Perubahan') }}</x-primary-button>
+                    </div>
                 </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Skor Akhir</h3>
-                <form action="{{ route('pertandingan.statistik.updateSkor', $pertandingan->id) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="grid grid-cols-2 gap-4 items-center">
-                        <div class="text-center">
-                            <x-input-label for="skor_tuan_rumah" :value="__($pertandingan->klubTuanRumah->nama)" />
-                            <x-text-input id="skor_tuan_rumah" class="block mt-1 w-full text-center" type="number" name="skor_tuan_rumah" :value="old('skor_tuan_rumah', $pertandingan->skor_tuan_rumah)" required />
-                        </div>
-                        <div class="text-center">
-                            <x-input-label for="skor_tamu" :value="__($pertandingan->klubTamu->nama)" />
-                            <x-text-input id="skor_tamu" class="block mt-1 w-full text-center" type="number" name="skor_tamu" :value="old('skor_tamu', $pertandingan->skor_tamu)" required />
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-end mt-6">
-                        <x-primary-button>{{ __('Update Skor') }}</x-primary-button>
-                    </div>
-                </form>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Pencetak Gol</h3>
-                <form action="{{ route('pertandingan.statistik.storeGol', $pertandingan->id) }}" method="POST" class="mb-6 border-b pb-6">
-                    @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <x-input-label for="pemain_id" :value="__('Pencetak Gol')" />
-                            <select name="pemain_id" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                                <option value="">Pilih Pemain</option>
-                                @foreach($pemains as $pemain)
-                                <option value="{{ $pemain->id }}">{{ $pemain->nama_pemain }} ({{$pemain->klub->nama}})</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <x-input-label for="assist_pemain_id" :value="__('Assist (Opsional)')" />
-                            <select name="assist_pemain_id" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
-                                <option value="">Pilih Pemain</option>
-                                @foreach($pemains as $pemain)
-                                <option value="{{ $pemain->id }}">{{ $pemain->nama_pemain }} ({{$pemain->klub->nama}})</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <x-input-label for="menit_gol" :value="__('Menit ke-')" />
-                            <x-text-input id="menit_gol" class="block mt-1 w-full" type="number" name="menit_gol" required />
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-end mt-4">
-                        <x-primary-button>{{ __('+ Tambah Gol') }}</x-primary-button>
-                    </div>
-                </form>
-
-                <ul class="space-y-2">
-                    @forelse($gols as $gol)
-                    <li class="flex justify-between items-center p-2 rounded hover:bg-gray-50">
-                        <div>
-                            <span class="font-semibold">{{ $gol->pemain->nama_pemain }}</span>
-                            @if($gol->assistPemain)
-                            <span class="text-sm text-gray-500">(Assist: {{ $gol->assistPemain->nama_pemain }})</span>
-                            @endif
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-sm text-gray-600 mr-4">Menit: {{ $gol->menit_gol }}'</span>
-                            <form action="{{ route('pertandingan.statistik.destroyGol', $gol->id) }}" method="POST" onsubmit="return confirm('Hapus data gol ini?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-500 hover:text-red-700 text-xs font-semibold">HAPUS</button>
-                            </form>
-                        </div>
-                    </li>
-                    @empty
-                    <p class="text-sm text-gray-500">Belum ada data gol yang diinput.</p>
-                    @endforelse
-                </ul>
-            </div>
-            
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Kartu Kuning / Merah</h3>
-                <form action="{{ route('pertandingan.statistik.storeKartu', $pertandingan->id) }}" method="POST" class="mb-6 border-b pb-6">
-                    @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <x-input-label for="pemain_id_kartu" :value="__('Pemain')" />
-                            <select name="pemain_id" id="pemain_id_kartu" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                                <option value="">Pilih Pemain</option>
-                                @foreach($pemains as $pemain)
-                                <option value="{{ $pemain->id }}">{{ $pemain->nama_pemain }} ({{$pemain->klub->nama}})</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <x-input-label for="jenis_kartu" :value="__('Jenis Kartu')" />
-                            <select name="jenis_kartu" id="jenis_kartu" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                                <option value="kuning">Kuning</option>
-                                <option value="merah">Merah</option>
-                            </select>
-                        </div>
-                        <div>
-                            <x-input-label for="menit_kartu" :value="__('Menit ke-')" />
-                            <x-text-input id="menit_kartu" class="block mt-1 w-full" type="number" name="menit_kartu" required />
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-end mt-4">
-                        <x-primary-button>{{ __('+ Tambah Kartu') }}</x-primary-button>
-                    </div>
-                </form>
-
-                <ul class="space-y-2">
-                    @forelse($kartus as $kartu)
-                    <li class="flex justify-between items-center p-2 rounded hover:bg-gray-50">
-                        <div class="flex items-center">
-                            @if($kartu->jenis_kartu == 'kuning')
-                                <div class="w-4 h-5 bg-yellow-400 mr-3 rounded-sm"></div>
-                            @else
-                                <div class="w-4 h-5 bg-red-600 mr-3 rounded-sm"></div>
-                            @endif
-                            <span class="font-semibold">{{ $kartu->pemain->nama_pemain }}</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-sm text-gray-600 mr-4">Menit: {{ $kartu->menit_kartu }}'</span>
-                            <form action="{{ route('pertandingan.statistik.destroyKartu', $kartu->id) }}" method="POST" onsubmit="return confirm('Hapus data kartu ini?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-500 hover:text-red-700 text-xs font-semibold">HAPUS</button>
-                            </form>
-                        </div>
-                    </li>
-                    @empty
-                    <p class="text-sm text-gray-500">Belum ada data kartu yang diinput.</p>
-                    @endforelse
-                </ul>
-            </div>
-
-            </div>
+            </form>
+        </div>
     </div>
+
+    <div id="gol-template" style="display: none;">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center gol-row">
+            <div><select name="gols[__INDEX__][pemain_id]" class="block w-full border-gray-300 rounded-md shadow-sm"><option value="">Pencetak Gol</option>@foreach($pemains as $pemain)<option value="{{ $pemain->id }}">{{$pemain->nama_pemain}}</option>@endforeach</select></div>
+            <div><select name="gols[__INDEX__][assist_pemain_id]" class="block w-full border-gray-300 rounded-md shadow-sm"><option value="">Pemberi Assist</option>@foreach($pemains as $pemain)<option value="{{ $pemain->id }}">{{$pemain->nama_pemain}}</option>@endforeach</select></div>
+            <div><x-text-input type="number" name="gols[__INDEX__][menit_gol]" class="block w-full" placeholder="Menit ke-" /></div>
+            <div><button type="button" class="text-red-500 hover:text-red-700 text-sm font-semibold remove-row">Hapus</button></div>
+        </div>
+    </div>
+    <div id="kartu-template" style="display: none;">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center kartu-row">
+            <div><select name="kartus[__INDEX__][pemain_id]" class="block w-full border-gray-300 rounded-md shadow-sm"><option value="">Pilih Pemain</option>@foreach($pemains as $pemain)<option value="{{ $pemain->id }}">{{$pemain->nama_pemain}}</option>@endforeach</select></div>
+            <div><select name="kartus[__INDEX__][jenis_kartu]" class="block w-full border-gray-300 rounded-md shadow-sm"><option value="kuning">Kuning</option><option value="merah">Merah</option></select></div>
+            <div><x-text-input type="number" name="kartus[__INDEX__][menit_kartu]" class="block w-full" placeholder="Menit ke-" /></div>
+            <div><button type="button" class="text-red-500 hover:text-red-700 text-sm font-semibold remove-row">Hapus</button></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fungsi untuk menambah baris
+            function addRow(containerId, templateId) {
+                const container = document.getElementById(containerId);
+                const template = document.getElementById(templateId).innerHTML;
+                const newIndex = container.querySelectorAll('.gol-row, .kartu-row').length;
+                const newRowHTML = template.replace(/__INDEX__/g, newIndex);
+                container.insertAdjacentHTML('beforeend', newRowHTML);
+            }
+
+            // Fungsi untuk menghapus baris
+            document.addEventListener('click', function (e) {
+                if (e.target && e.target.classList.contains('remove-row')) {
+                    e.target.closest('.gol-row, .kartu-row').remove();
+                }
+            });
+
+            document.getElementById('tambah-gol').addEventListener('click', () => addRow('daftar-gol', 'gol-template'));
+            document.getElementById('tambah-kartu').addEventListener('click', () => addRow('daftar-kartu', 'kartu-template'));
+        });
+    </script>
 </x-app-layout>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pertandingan;
 use App\Models\Klub;
 use Illuminate\Http\Request;
+use App\Models\Liga;
 
 class PertandinganController extends Controller
 {
@@ -32,21 +33,24 @@ class PertandinganController extends Controller
     public function create()
     {
         $klubs = Klub::all();
-        return view('pertandingan.create', compact('klubs'));
+        $ligas = Liga::all(); 
+        return view('pertandingan.create', compact('klubs', 'ligas'));
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'klub_tuan_rumah_id' => 'required|exists:klubs,id',
-            'klub_tamu_id' => 'required|exists:klubs,id|different:klub_tuan_rumah_id',
-            'tanggal_pertandingan' => 'required|date',
-        ]);
+{
+    $request->validate([
+        'klub_tuan_rumah_id' => 'required|exists:klubs,id',
+        'klub_tamu_id' => 'required|exists:klubs,id|different:klub_tuan_rumah_id',
+        'tanggal_pertandingan' => 'required|date',
+        'stadion' => 'required|string|max:255', 
+        'liga' => 'required|string|max:255',    
+    ]);
 
-        Pertandingan::create($request->all());
+    Pertandingan::create($request->all());
 
-        return redirect()->route('pertandingan.index')->with('success', 'Jadwal pertandingan berhasil ditambahkan!');
-    }
+    return redirect()->route('pertandingan.index')->with('success', 'Jadwal pertandingan berhasil ditambahkan!');
+}
 
     // Method show tidak kita gunakan, bisa dihapus atau dibiarkan kosong
     public function show(Pertandingan $pertandingan)
