@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Klub;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Liga;
 
 class KlubController extends Controller
 {
@@ -21,68 +22,71 @@ class KlubController extends Controller
      * Menampilkan form untuk membuat klub baru.
      */
     public function create()
-    {
-        return view('klub.create');
-    }
+{
+    $ligas = Liga::all(); // Ambil semua data liga
+    return view('klub.create', compact('ligas'));
+}
 
     /**
      * Menyimpan klub baru ke database.
      */
     public function store(Request $request)
-    {
-        // 1. Validasi Input
-        $request->validate([
-            'nama' => 'required|string|max:255|unique:klubs,nama',
-            'kota' => 'required|string|max:255',
-            'stadion' => 'required|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+{
+    // 1. Validasi Input (sudah benar)
+    $request->validate([
+        'nama' => 'required|string|max:255|unique:klubs,nama',
+        'kota' => 'required|string|max:255',
+        'stadion' => 'required|string|max:255',
+        'liga_id' => 'required|exists:ligas,id',
+        'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    ]);
 
-        $logoPath = null;
-        if ($request->hasFile('logo')) {
-            // 2. Upload Logo
-            // Kode Baru
-            $fileName = time() . '.' . $request->logo->extension();
-            $request->logo->move(public_path('logos'), $fileName);
-            $logoPath = 'logos/' . $fileName;
-        }
-
-        // 3. Buat Klub Baru
-        Klub::create([
-            'nama' => $request->nama,
-            'kota' => $request->kota,
-            'stadion' => $request->stadion,
-            'logo' => $logoPath,
-        ]);
-
-        return redirect()->route('klub.index')->with('success', 'Klub berhasil ditambahkan!');
+    $logoPath = null;
+    if ($request->hasFile('logo')) {
+        $fileName = time() . '.' . $request->logo->extension();
+        $request->logo->move(public_path('logos'), $fileName);
+        $logoPath = 'logos/' . $fileName;
     }
+
+    // 2. Buat Klub Baru (BAGIAN YANG DIPERBAIKI)
+    // Pastikan 'liga_id' disertakan di sini
+    Klub::create([
+        'nama' => $request->nama,
+        'kota' => $request->kota,
+        'stadion' => $request->stadion,
+        'liga_id' => $request->liga_id, // <-- Baris ini yang paling penting
+        'logo' => $logoPath,
+    ]);
+
+    return redirect()->route('klub.index')->with('success', 'Klub berhasil ditambahkan!');
+}
 
     /**
      * Menampilkan form untuk mengedit klub.
      */
     public function edit(Klub $klub)
-    {
-        return view('klub.edit', compact('klub'));
-    }
+{
+    $ligas = Liga::all(); // Ambil semua data liga
+    return view('klub.edit', compact('klub', 'ligas'));
+}
 
     /**
      * Memperbarui data klub di database.
      */
     public function update(Request $request, Klub $klub)
     {
-        // 1. Validasi Input
+        // 1. Validasi Input (Bagian ini sudah benar)
         $request->validate([
             'nama' => 'required|string|max:255|unique:klubs,nama,' . $klub->id,
             'kota' => 'required|string|max:255',
             'stadion' => 'required|string|max:255',
+            'liga_id' => 'required|exists:ligas,id',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        // Kode Baru untuk method update
         $logoPath = $klub->logo;
         if ($request->hasFile('logo')) {
-            // Hapus logo lama jika ada (opsional, tapi bagus)
+            // Hapus logo lama jika ada
             if ($klub->logo && file_exists(public_path($klub->logo))) {
                 unlink(public_path($klub->logo));
             }
@@ -92,11 +96,14 @@ class KlubController extends Controller
             $request->logo->move(public_path('logos'), $fileName);
             $logoPath = 'logos/' . $fileName;
         }
-        // 4. Update data klub
+        
+        // 2. Update data klub (BAGIAN PENTING)
+        // Perintah ini mengambil SEMUA data yang lolos validasi dan menyimpannya.
         $klub->update([
             'nama' => $request->nama,
             'kota' => $request->kota,
             'stadion' => $request->stadion,
+            'liga_id' => $request->liga_id, // <-- Memastikan liga_id ikut disimpan
             'logo' => $logoPath,
         ]);
 
@@ -106,14 +113,14 @@ class KlubController extends Controller
     /**
      * Menghapus klub dari database.
      */
+    // Kode Baru yang Lebih Konsisten
     public function destroy(Klub $klub)
     {
-        // 1. Hapus logo dari penyimpanan
-        if ($klub->logo) {
-            Storage::delete($klub->logo);
+        // Hapus logo dari folder public
+        if ($klub->logo && file_exists(public_path($klub->logo))) {
+            unlink(public_path($klub->logo));
         }
 
-        // 2. Hapus data dari database
         $klub->delete();
 
         return redirect()->route('klub.index')->with('success', 'Klub berhasil dihapus!');

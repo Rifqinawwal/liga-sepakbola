@@ -11,21 +11,19 @@ class PertandinganController extends Controller
 {
     public function index()
 {
-    // Mengambil pertandingan yang akan datang (tanggalnya hari ini atau di masa depan DAN skornya masih kosong)
-    $pertandinganAkanDatang = Pertandingan::with(['klubTuanRumah', 'klubTamu'])
+    $pertandinganAkanDatang = Pertandingan::with(['klubTuanRumah', 'klubTamu', 'liga'])
         ->where('tanggal_pertandingan', '>=', now()->startOfDay())
         ->whereNull('skor_tuan_rumah')
-        ->latest('tanggal_pertandingan')
-        ->paginate(10, ['*'], 'akan_datang'); // Paginasi terpisah
+        ->orderBy('tanggal_pertandingan')->orderBy('waktu')
+        ->get()
+        ->groupBy('tanggal_pertandingan'); // Kelompokkan berdasarkan tanggal
 
-    // Mengambil pertandingan yang sudah selesai (tanggalnya sudah lewat ATAU skornya sudah terisi)
-    $pertandinganSelesai = Pertandingan::with(['klubTuanRumah', 'klubTamu'])
-        ->where(function ($query) {
-            $query->where('tanggal_pertandingan', '<', now()->startOfDay())
-                  ->orWhereNotNull('skor_tuan_rumah');
-        })
-        ->latest('tanggal_pertandingan')
-        ->paginate(10, ['*'], 'selesai'); // Paginasi terpisah
+    $pertandinganSelesai = Pertandingan::with(['klubTuanRumah', 'klubTamu', 'liga'])
+        ->whereNotNull('skor_tuan_rumah')
+        ->orderByDesc('tanggal_pertandingan')->orderByDesc('waktu')
+        ->limit(30) // Ambil 30 pertandingan terakhir
+        ->get()
+        ->groupBy('tanggal_pertandingan'); // Kelompokkan berdasarkan tanggal
 
     return view('pertandingan.index', compact('pertandinganAkanDatang', 'pertandinganSelesai'));
 }
@@ -44,7 +42,8 @@ class PertandinganController extends Controller
         'klub_tamu_id' => 'required|exists:klubs,id|different:klub_tuan_rumah_id',
         'tanggal_pertandingan' => 'required|date',
         'stadion' => 'required|string|max:255', 
-        'liga' => 'required|string|max:255',    
+        'waktu' => 'required|date_format:H:i',
+        'liga_id' => 'required|string|max:255',    
     ]);
 
     Pertandingan::create($request->all());

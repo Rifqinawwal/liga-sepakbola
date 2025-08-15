@@ -23,38 +23,33 @@
                     <form action="{{ route('pemain.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
-                        <!-- Klub -->
                         <div class="mt-4">
                             <x-input-label for="klub_id" :value="__('Klub')" />
                             <select name="klub_id" id="klub_id" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                                 <option value="">Pilih Klub</option>
                                 @foreach ($klubs as $klub)
                                     <option value="{{ $klub->id }}" {{ old('klub_id') == $klub->id ? 'selected' : '' }}>
-                                        {{ $klub->nama }}
+                                        {{ $klub->nama }} ({{ $klub->liga->nama ?? '' }})
                                     </option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <!-- Nama Pemain -->
                         <div class="mt-4">
                             <x-input-label for="nama_pemain" :value="__('Nama Pemain')" />
                             <x-text-input id="nama_pemain" class="block mt-1 w-full" type="text" name="nama_pemain" :value="old('nama_pemain')" required />
                         </div>
 
-                        <!-- Posisi -->
                         <div class="mt-4">
                             <x-input-label for="posisi" :value="__('Posisi')" />
                             <x-text-input id="posisi" class="block mt-1 w-full" type="text" name="posisi" :value="old('posisi')" required />
                         </div>
 
-                        <!-- Nomor Punggung -->
                         <div class="mt-4">
                             <x-input-label for="nomor_punggung" :value="__('Nomor Punggung')" />
                             <x-text-input id="nomor_punggung" class="block mt-1 w-full" type="number" name="nomor_punggung" :value="old('nomor_punggung')" required />
                         </div>
 
-                        <!-- Foto -->
                         <div class="mt-4">
                             <x-input-label for="foto" :value="__('Foto Pemain')" />
                             <x-text-input id="foto" class="block mt-1 w-full" type="file" name="foto" />

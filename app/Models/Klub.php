@@ -19,10 +19,16 @@ class Klub extends Model
         'kota',
         'stadion',
         'logo',
+        'liga_id',
     ];
 
      public function pemains()
     {
         return $this->hasMany(Pemain::class);
     }
+
+    public function liga() // <-- Tambahkan method ini
+{
+    return $this->belongsTo(Liga::class);
+}
 }

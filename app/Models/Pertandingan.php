@@ -19,7 +19,8 @@ class Pertandingan extends Model
     'klub_tamu_id',
     'tanggal_pertandingan',
     'stadion', 
-    'liga',   
+    'waktu',
+    'liga_id',   
     'skor_tuan_rumah',
     'skor_tamu',
 ];

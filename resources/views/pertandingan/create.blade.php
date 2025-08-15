@@ -48,30 +48,36 @@
                                 @endforeach
                             </select>
                         </div>
-                        <!-- Stadion dan liga -->
                         
-
+                        <!-- Stadion -->
                         <div class="mt-4">
                             <x-input-label for="stadion" :value="__('Stadion')" />
                             <x-text-input id="stadion" class="block mt-1 w-full" type="text" name="stadion" :value="old('stadion')" required />
                         </div>
 
+                        <!-- Liga Pertandingan (BAGIAN YANG DIPERBAIKI) -->
                         <div class="mt-4">
-                            <x-input-label for="liga" :value="__('Liga Pertandingan')" />
-                            <select name="liga" id="liga" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                                 <option value="{{ $liga->id }}"> {{ $liga->nama }} </option>
+                            <x-input-label for="liga_id" :value="__('Liga Pertandingan')" />
+                            <select name="liga_id" id="liga_id" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+                                <option value="">Pilih Liga</option>
                                 @foreach ($ligas as $liga)
-                                    <option value="{{ $liga }}" {{ old('liga') == $liga ? 'selected' : '' }}>
-                                        {{ $liga }}
+                                    <option value="{{ $liga->id }}" {{ old('liga_id') == $liga->id ? 'selected' : '' }}>
+                                        {{ $liga->nama }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
-        
+
                         <!-- Tanggal Pertandingan -->
                         <div class="mt-4">
                             <x-input-label for="tanggal_pertandingan" :value="__('Tanggal Pertandingan')" />
                             <x-text-input id="tanggal_pertandingan" class="block mt-1 w-full" type="date" name="tanggal_pertandingan" :value="old('tanggal_pertandingan')" required />
+                        </div>
+
+                        <!-- Waktu pertandingan -->
+                        <div class="mt-4">
+                            <x-input-label for="waktu" :value="__('Waktu Pertandingan (WIB)')" />
+                            <x-text-input id="waktu" class="block mt-1 w-full" type="time" name="waktu" :value="old('waktu')" required />
                         </div>
 
                         <div class="flex items-center justify-end mt-4">

@@ -31,6 +31,18 @@
                         </div>
 
                         <div class="mt-4">
+                            <x-input-label for="liga_id" :value="__('Liga')" />
+                            <select name="liga_id" id="liga_id" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+                                <option value="">Pilih Liga</option>
+                                @foreach ($ligas as $liga)
+                                    <option value="{{ $liga->id }}" {{ old('liga_id') == $liga->id ? 'selected' : '' }}>
+                                        {{ $liga->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mt-4">
                             <x-input-label for="kota" :value="__('Kota Asal')" />
                             <x-text-input id="kota" class="block mt-1 w-full" type="text" name="kota" :value="old('kota')" required />
                         </div>

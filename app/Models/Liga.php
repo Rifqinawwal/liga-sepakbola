@@ -14,4 +14,10 @@ class Liga extends Model
     {
         return $this->hasMany(Pertandingan::class);
     }
+
+    // app/Models/Liga.php
+    public function klubs() // <-- Tambahkan method ini
+    {
+        return $this->hasMany(Klub::class);
+    }
 }

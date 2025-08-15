@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pemain;
 use App\Models\Klub; // <-- Jangan lupa import model Klub
 use Illuminate\Http\Request;
+use App\Models\Liga;
 
 class PemainController extends Controller
 {
@@ -53,7 +54,8 @@ class PemainController extends Controller
     public function edit(Pemain $pemain)
     {
         $klubs = Klub::all(); // Data klub untuk dropdown
-        return view('pemain.edit', compact('pemain', 'klubs'));
+        $ligas = Liga::all();
+        return view('pemain.edit', compact('pemain', 'klubs', 'ligas'));
     }
 
     public function update(Request $request, Pemain $pemain)
