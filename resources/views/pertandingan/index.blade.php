@@ -1,10 +1,6 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Jadwal & Hasil Pertandingan') }}
-        </h2>
-    </x-slot>
+@extends('layouts.public')
 
+@section('content')
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
@@ -25,15 +21,15 @@
                             @foreach ($pertandingans as $match)
                             <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
                                 <div class="flex-1 text-right font-semibold">{{ $match->klubTuanRumah->nama }}</div>
-                                <img src="{{ asset($match->klubTuanRumah->logo) }}" class="h-8 w-8 object-contain mx-4">
+                                <img src="{{ asset($match->klubTuanRumah->logo) }}" class="h-8 w-8 object-contain mx-4" alt="{{$match->klubTuanRumah->nama}}">
                                 <div class="text-center">
                                     <div class="px-3 py-1 bg-gray-200 text-gray-800 rounded-md font-bold">{{ \Carbon\Carbon::parse($match->waktu)->format('H:i') }}</div>
                                     <div class="text-xs text-gray-500 mt-1">{{ $match->liga->nama }}</div>
                                 </div>
-                                <img src="{{ asset($match->klubTamu->logo) }}" class="h-8 w-8 object-contain mx-4">
+                                <img src="{{ asset($match->klubTamu->logo) }}" class="h-8 w-8 object-contain mx-4" alt="{{$match->klubTamu->nama}}">
                                 <div class="flex-1 font-semibold">{{ $match->klubTamu->nama }}</div>
                                 @auth
-                                    <a href="{{ route('pertandingan.statistik.edit', $match->id) }}" class="ml-4 text-sm text-indigo-600">Kelola</a>
+                                    <a href="{{ route('pertandingan.statistik.edit', $match->id) }}" class="ml-4 text-sm text-indigo-600 flex-shrink-0">Kelola</a>
                                 @endauth
                             </div>
                             @endforeach
@@ -53,14 +49,14 @@
                             @foreach ($pertandingans as $match)
                             <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
                                 <div class="flex-1 text-right font-semibold">{{ $match->klubTuanRumah->nama }}</div>
-                                <img src="{{ asset($match->klubTuanRumah->logo) }}" class="h-8 w-8 object-contain mx-4">
+                                <img src="{{ asset($match->klubTuanRumah->logo) }}" class="h-8 w-8 object-contain mx-4" alt="{{$match->klubTuanRumah->nama}}">
                                 <div class="text-center">
                                     <div class="px-3 py-1 bg-blue-800 text-white rounded-md font-bold text-lg">{{ $match->skor_tuan_rumah }} - {{ $match->skor_tamu }}</div>
                                     <div class="text-xs text-gray-500 mt-1">{{ $match->liga->nama }}</div>
                                 </div>
-                                <img src="{{ asset($match->klubTamu->logo) }}" class="h-8 w-8 object-contain mx-4">
+                                <img src="{{ asset($match->klubTamu->logo) }}" class="h-8 w-8 object-contain mx-4" alt="{{$match->klubTamu->nama}}">
                                 <div class="flex-1 font-semibold">{{ $match->klubTamu->nama }}</div>
-                                <a href="{{ route('pertandingan.statistik.edit', $match->id) }}" class="ml-4 text-sm text-indigo-600">
+                                <a href="{{ route('pertandingan.statistik.edit', $match->id) }}" class="ml-4 text-sm text-indigo-600 flex-shrink-0">
                                     @auth Kelola @else Detail @endauth
                                 </a>
                             </div>
@@ -74,4 +70,4 @@
 
         </div>
     </div>
-</x-app-layout>
+@endsection
