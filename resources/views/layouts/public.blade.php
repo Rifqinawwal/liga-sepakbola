@@ -14,6 +14,10 @@
         <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('icon/favicon-32x32.png') }}">
         <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('icon/favicon-16x16.png') }}">
         <link rel="manifest" href="/site.webmanifest">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -21,7 +25,7 @@
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
             <!-- Navigation Menu Publik -->
-            <nav class="bg-white shadow-sm border-b border-gray-100">
+            <nav class="fixed top-0 w-full z-50 bg-white shadow-sm border-b border-gray-100">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
                         <!-- Logo dan Menu Utama -->
@@ -30,25 +34,30 @@
                                 <a href="{{ url('/') }}" class="flex items-center">
                                     {{-- Tampilkan gambar favicon menggunakan tag <img> --}}
                                     <img src="{{ asset('icon/favicon-32x32.png') }}" alt="Logo Balbalan" class="block h-9 w-auto">
-                                    <span class="ml-3 font-semibold text-xl text-gray-800">
+                                    <span class="ml-3 font-semibold text-xl text-green-900 font-poppins">
                                         Balbalan
                                     </span>
                                 </a>
                             </div>
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <x-nav-link :href="url('/')" :active="request()->is('/')">
+                                <x-nav-link :href="url('/')" :active="request()->is('/')"
+                                    class="{{ request()->routeIs('home.*') ? 'border-green-900' : 'border-transparent' }}">
                                     {{ __('Home') }}
                                 </x-nav-link>
-                                <x-nav-link :href="route('klub.index')" :active="request()->routeIs('klub.index')">
+                                <x-nav-link :href="route('klub.index')" :active="request()->routeIs('klub.index')"
+                                    class="{{ request()->routeIs('klub.*') ? 'border-green-900' : 'border-transparent' }}">
                                     {{ __('Klub') }}
                                 </x-nav-link>
-                                <x-nav-link :href="route('pemain.index')" :active="request()->routeIs('pemain.index')">
+                                <x-nav-link :href="route('pemain.index')" :active="request()->routeIs('pemain.index')"
+                                   class="{{ request()->routeIs('pemain.*') ? 'border-green-900' : 'border-transparent' }}">
                                     {{ __('Pemain') }}
                                 </x-nav-link>
-                                <x-nav-link :href="route('pertandingan.index')" :active="request()->routeIs('pertandingan.index')">
+                                <x-nav-link :href="route('pertandingan.index')" :active="request()->routeIs('pertandingan.index')"
+                                    class="{{ request()->routeIs('pertandingan.*') ? 'border-green-900' : 'border-transparent' }}">
                                     {{ __('Pertandingan') }}
                                 </x-nav-link>
-                                <x-nav-link :href="route('klasemen.index')" :active="request()->routeIs('klasemen.index')">
+                                <x-nav-link :href="route('klasemen.index')" :active="request()->routeIs('klasemen.index')"
+                                    class="{{ request()->routeIs('klasemen.*') ? 'border-green-900' : 'border-transparent' }}">
                                     {{ __('Klasemen') }}
                                 </x-nav-link>
                             </div>
@@ -63,10 +72,10 @@
                                             type="text" 
                                             name="query"
                                             value="{{ request('query') }}" 
-                                            class="block w-full pl-4 pr-10 py-2 text-sm text-gray-700 bg-gray-100 border border-transparent rounded-full focus:ring-indigo-500 focus:border-indigo-500" 
+                                            class="block w-full pl-4 pr-10 py-2 text-sm text-white bg-green-900 border placeholder-white border-transparent rounded-full focus:ring-white focus:border-white" 
                                             placeholder="Cari...">
                                         <button type="submit" class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                            <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                            <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                               <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                                             </svg>
                                         </button>
@@ -91,7 +100,7 @@
             </nav>
 
             <!-- Page Content -->
-            <main>
+            <main class="pt-16">
                 @yield('content')
             </main>
         </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Klub;
 use App\Models\Pemain;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class SearchController extends Controller
 {
@@ -16,22 +17,38 @@ class SearchController extends Controller
             return redirect('/');
         }
 
-        // 1. Cari Klub (logika ini tetap sama)
-       $klubs = Klub::where('nama', 'LIKE', "%{$query}%") // Kondisi 1: Nama klub cocok
-    ->orWhereHas('pemains', function ($q) use ($query) { // Kondisi 2: Punya pemain yang namanya cocok
-        $q->where('nama_pemain', 'LIKE', "%{$query}%");
-    })
-    ->get();
-
-        // 2. Cari Pemain (logika ini diperbarui)
-        // Cari pemain yang namanya cocok ATAU yang nama klubnya cocok
-        $pemains = Pemain::with('klub')
-            ->where('nama_pemain', 'LIKE', "%{$query}%") // Kondisi 1: Nama pemain cocok
-            ->orWhereHas('klub', function ($q) use ($query) { // Kondisi 2: Nama klubnya cocok
+        // --- Pencarian di Database Lokal (Klub & Pemain) ---
+        $klubs = Klub::where('nama', 'LIKE', "%{$query}%")
+            ->orWhereHas('liga', function ($q) use ($query) {
                 $q->where('nama', 'LIKE', "%{$query}%");
             })
             ->get();
 
-        return view('search-results', compact('klubs', 'pemains', 'query'));
+        $pemains = Pemain::with('klub')
+            ->where('nama_pemain', 'LIKE', "%{$query}%")
+            ->orWhereHas('klub', function ($q) use ($query) {
+                $q->where('nama', 'LIKE', "%{$query}%");
+            })
+            ->get();
+
+        // --- Pencarian Berita dari NewsAPI ---
+        $articles = [];
+        $apiKey = env('NEWS_API_KEY');
+
+        if ($apiKey) {
+            $response = Http::get('https://newsapi.org/v2/everything', [
+                'q' => $query, // Gunakan kata kunci dari pengguna
+                'language' => 'id',
+                'sortBy' => 'relevancy',
+                'apiKey' => $apiKey,
+                'pageSize' => 3 // Ambil 3 berita paling relevan
+            ]);
+
+            if ($response->successful() && $response->json()['totalResults'] > 0) {
+                $articles = $response->json()['articles'];
+            }
+        }
+
+        return view('search-results', compact('klubs', 'pemains', 'articles', 'query'));
     }
 }

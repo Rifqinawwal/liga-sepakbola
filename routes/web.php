@@ -9,6 +9,7 @@ use App\Http\Controllers\PertandinganStatistikController;
 use App\Http\Controllers\KlasemenController;
 use App\Http\Controllers\LigaController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\NewsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,7 +31,7 @@ Route::get('/klub', [KlubController::class, 'index'])->name('klub.index');
 Route::get('/pemain', [PemainController::class, 'index'])->name('pemain.index');
 Route::get('/pertandingan', [PertandinganController::class, 'index'])->name('pertandingan.index');
 Route::get('/search', [SearchController::class, 'index'])->name('search.index');
-
+Route::get('/', [NewsController::class, 'index'])->name('welcome');
 
 // ===================================================
 // == RUTE ADMIN (Hanya bisa diakses setelah login) ==
