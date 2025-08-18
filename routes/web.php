@@ -28,10 +28,13 @@ Route::get('/klasemen', [KlasemenController::class, 'index'])->name('klasemen.in
 
 // Rute untuk MENAMPILKAN daftar (method index)
 Route::get('/klub', [KlubController::class, 'index'])->name('klub.index');
+Route::get('/klub/liga/{liga}', [KlubController::class, 'indexByLiga'])->name('klub.liga');
 Route::get('/pemain', [PemainController::class, 'index'])->name('pemain.index');
 Route::get('/pertandingan', [PertandinganController::class, 'index'])->name('pertandingan.index');
 Route::get('/search', [SearchController::class, 'index'])->name('search.index');
 Route::get('/', [NewsController::class, 'index'])->name('welcome');
+Route::get('/pertandingan/liga/{liga}', [PertandinganController::class, 'indexByLiga'])->name('pertandingan.liga');
+Route::get('/pemain/klub/{klub}', [PemainController::class, 'indexByKlub'])->name('pemain.klub');
 
 // ===================================================
 // == RUTE ADMIN (Hanya bisa diakses setelah login) ==

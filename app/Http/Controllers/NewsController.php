@@ -33,7 +33,7 @@ class NewsController extends Controller
                 foreach ($articles as &$article) {
                     // Cek jika judul tidak kosong sebelum menerjemahkan
                     if (!empty($article['title'])) {
-                        $translationResponse = Http::get('https://api.mymemory.translated.net/get', [
+                        $translationResponse = Http::timeout(30)->get('https://api.mymemory.translated.net/get', [
                             'q' => $article['title'],
                             'langpair' => 'en|id',
                         ]);

@@ -125,4 +125,10 @@ class KlubController extends Controller
 
         return redirect()->route('klub.index')->with('success', 'Klub berhasil dihapus!');
     }
+
+    public function indexByLiga(Liga $liga)
+{
+    $klubs = $liga->klubs()->latest()->paginate(10);
+    return view('klub.index', compact('klubs'));
+}
 }

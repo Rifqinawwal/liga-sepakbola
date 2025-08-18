@@ -18,14 +18,30 @@ class LigaController extends Controller
         return view('liga.create');
     }
 
-    public function store(Request $request)
+    /**
+     * Menyimpan liga baru ke database.
+     */
+  public function store(Request $request)
     {
         $request->validate([
             'nama' => 'required|string|max:255|unique:ligas,nama',
             'negara' => 'required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        Liga::create($request->all());
+        $logoPath = null;
+        if ($request->hasFile('logo')) {
+            $fileName = time() . '.' . $request->logo->extension();
+            $request->logo->move(public_path('liga_logos'), $fileName);
+            $logoPath = 'liga_logos/' . $fileName;
+        }
+
+        $liga = new Liga;
+        $liga->nama = $request->nama;
+        $liga->negara = $request->negara;
+        $liga->logo = $logoPath;
+        $liga->save();
+
         return redirect()->route('liga.index')->with('success', 'Liga berhasil ditambahkan.');
     }
 
@@ -39,14 +55,35 @@ class LigaController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255|unique:ligas,nama,' . $liga->id,
             'negara' => 'required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $liga->update($request->all());
+        $logoPath = $liga->logo;
+        if ($request->hasFile('logo')) {
+            if ($liga->logo && file_exists(public_path($liga->logo))) {
+                unlink(public_path($liga->logo));
+            }
+            $fileName = time() . '.' . $request->logo->extension();
+            $request->logo->move(public_path('liga_logos'), $fileName);
+            $logoPath = 'liga_logos/' . $fileName;
+        }
+
+        // Gunakan metode save() manual
+        $liga->nama = $request->nama;
+        $liga->negara = $request->negara;
+        $liga->logo = $logoPath;
+        $liga->save();
+
         return redirect()->route('liga.index')->with('success', 'Liga berhasil diperbarui.');
     }
 
     public function destroy(Liga $liga)
     {
+        // Hapus logo dari folder public jika ada
+        if ($liga->logo && file_exists(public_path($liga->logo))) {
+            unlink(public_path($liga->logo));
+        }
+
         $liga->delete();
         return redirect()->route('liga.index')->with('success', 'Liga berhasil dihapus.');
     }

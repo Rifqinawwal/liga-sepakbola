@@ -52,7 +52,14 @@
                                         <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ $klub->nama }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $klub->kota }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $klub->stadion }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $klub->liga->nama ?? 'Tanpa Liga' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex items-center">
+                                                @if($klub->liga && $klub->liga->logo)
+                                                    <img src="{{ asset($klub->liga->logo) }}" alt="{{ $klub->liga->nama }}" class="h-6 w-6 object-contain mr-2">
+                                                @endif
+                                                <span>{{ $klub->liga->nama ?? 'Tanpa Liga' }}</span>
+                                            </div>
+                                        </td>
                                         @auth
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <a href="{{ route('klub.edit', $klub->id) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>

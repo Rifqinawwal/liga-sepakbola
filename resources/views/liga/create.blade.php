@@ -11,7 +11,7 @@
                             <ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
                         </div>
                     @endif
-                    <form action="{{ route('liga.store') }}" method="POST">
+                    <form action="{{ route('liga.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div>
                             <x-input-label for="nama" value="Nama Liga" />
@@ -20,6 +20,10 @@
                         <div class="mt-4">
                             <x-input-label for="negara" value="Negara" />
                             <x-text-input id="negara" class="block mt-1 w-full" type="text" name="negara" :value="old('negara')" required />
+                        </div>
+                        <div class="mt-4">
+                            <x-input-label for="logo" value="Logo Liga" />
+                            <x-text-input id="logo" class="block mt-1 w-full" type="file" name="logo" />
                         </div>
                         <div class="flex items-center justify-end mt-4">
                             <a href="{{ route('liga.index') }}" class="text-sm text-gray-600 hover:text-gray-900 mr-4">Batal</a>

@@ -89,6 +89,12 @@ class PemainController extends Controller
         return redirect()->route('pemain.index')->with('success', 'Data pemain berhasil diperbarui!');
     }
 
+    public function indexByKlub(Klub $klub)
+    {
+        $pemains = $klub->pemains()->with('klub')->latest()->paginate(10);
+        return view('pemain.index', compact('pemains'));
+    }
+
     public function destroy(Pemain $pemain)
     {
         if ($pemain->foto && file_exists(public_path($pemain->foto))) {

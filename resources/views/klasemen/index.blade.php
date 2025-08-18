@@ -9,17 +9,36 @@
                         Klasemen Liga
                     </h2>
 
-                    <div class="mb-4">
-                        <form action="{{ route('klasemen.index') }}" method="GET">
-                            <select name="liga_id" class="border-gray-300 rounded-md shadow-sm" onchange="this.form.submit()">
-                                <option value="">Semua Liga</option>
+                    <div x-data="{ open: false }" class="relative mb-4">
+                        <button @click="open = ! open" class="w-full sm:w-64 flex items-center justify-between text-left bg-white border border-gray-300 rounded-md shadow-sm px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            <span>
+                                @if($selectedLigaId && $ligas->firstWhere('id', $selectedLigaId))
+                                    <div class="flex items-center">
+                                        <img src="{{ asset($ligas->firstWhere('id', $selectedLigaId)->logo) }}" class="h-5 w-5 object-contain mr-2">
+                                        {{ $ligas->firstWhere('id', $selectedLigaId)->nama }}
+                                    </div>
+                                @else
+                                    Semua Liga
+                                @endif
+                            </span>
+                            <svg class="ml-2 -mr-1 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <div x-show="open" @click.away="open = false" class="absolute z-10 mt-2 w-full sm:w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5" style="display: none;">
+                            <div class="py-1">
+                                <a href="{{ route('klasemen.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Semua Liga</a>
                                 @foreach ($ligas as $liga)
-                                    <option value="{{ $liga->id }}" {{ $selectedLigaId == $liga->id ? 'selected' : '' }}>
-                                        {{ $liga->nama }}
-                                    </option>
+                                    <a href="{{ route('klasemen.index', ['liga_id' => $liga->id]) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        @if($liga->logo)
+                                            <img src="{{ asset($liga->logo) }}" alt="{{ $liga->nama }}" class="h-5 w-5 object-contain mr-2">
+                                        @endif
+                                        <span>{{ $liga->nama }}</span>
+                                    </a>
                                 @endforeach
-                            </select>
-                        </form>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="overflow-x-auto">

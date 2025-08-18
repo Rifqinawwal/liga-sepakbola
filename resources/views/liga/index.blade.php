@@ -15,6 +15,7 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Logo</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Liga</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Negara</th>
                                 <th class="relative px-6 py-3"></th>
@@ -23,6 +24,11 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse ($ligas as $liga)
                                 <tr>
+                                    <td class="px-6 py-4">
+                                        @if($liga->logo)
+                                            <img src="{{ asset($liga->logo) }}" class="h-8 object-contain">
+                                        @endif
+                                    </td>
                                     <td class="px-6 py-4 font-medium">{{ $liga->nama }}</td>
                                     <td class="px-6 py-4">{{ $liga->negara }}</td>
                                     <td class="px-6 py-4 text-right text-sm font-medium">

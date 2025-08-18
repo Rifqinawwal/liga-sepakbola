@@ -7,6 +7,7 @@ use App\Models\Klub;
 use Illuminate\Http\Request;
 use App\Models\Liga;
 
+
 class PertandinganController extends Controller
 {
     public function index()
@@ -78,6 +79,28 @@ class PertandinganController extends Controller
 
         return redirect()->route('pertandingan.index')->with('success', 'Skor pertandingan berhasil diperbarui!');
     }
+
+    public function indexByLiga(Liga $liga)
+    {
+        $pertandinganAkanDatang = Pertandingan::with(['klubTuanRumah', 'klubTamu', 'liga'])
+            ->where('liga_id', $liga->id) // Filter berdasarkan liga
+            ->where('tanggal_pertandingan', '>=', now()->startOfDay())
+            ->whereNull('skor_tuan_rumah')
+            ->orderBy('tanggal_pertandingan')->orderBy('waktu')
+            ->get()
+            ->groupBy('tanggal_pertandingan');
+
+        $pertandinganSelesai = Pertandingan::with(['klubTuanRumah', 'klubTamu', 'liga'])
+            ->where('liga_id', $liga->id) // Filter berdasarkan liga
+            ->whereNotNull('skor_tuan_rumah')
+            ->orderByDesc('tanggal_pertandingan')->orderByDesc('waktu')
+            ->limit(30)
+            ->get()
+            ->groupBy('tanggal_pertandingan');
+
+        return view('pertandingan.index', compact('pertandinganAkanDatang', 'pertandinganSelesai'));
+    }
+
 
     public function destroy(Pertandingan $pertandingan)
     {

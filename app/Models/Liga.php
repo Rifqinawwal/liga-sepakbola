@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Liga extends Model
 {
     use HasFactory;
-    protected $fillable = ['nama', 'negara'];
+    protected $fillable = ['nama', 'negara', 'liga'];
 
     public function pertandingans()
     {
