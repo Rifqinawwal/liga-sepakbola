@@ -17,6 +17,14 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        {{-- TAMBAHAN UNTUK SELECT2 (CSS) --}}
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <style>
+            .select2-container .select2-selection--single { height: 38px; }
+            .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 36px; }
+            .select2-results__option .select2-image { width: 25px; height: 25px; margin-right: 10px; border-radius: 50%; object-fit: cover; }
+        </style>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
@@ -34,78 +42,83 @@
                             <div class="hidden space-x-4 sm:-my-px sm:ms-10 sm:flex">
                                 <x-nav-link :href="url('/')" :active="request()->is('/')" class="px-3 {{ request()->is('/') ? 'border-green-500' : 'border-transparent' }}">{{ __('Home') }}</x-nav-link>
 
+                                {{-- Dropdown Klub --}}
                                 <div x-data="{ open: false }" class="relative hidden sm:flex sm:items-center">
-                                    <button @click="open = ! open" class="inline-flex items-center px-3 pt-1 border-b-2 {{ request()->routeIs('klub.*') ? 'border-green-500' : 'border-transparent' }} text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 focus:outline-none transition">
-                                        <div>Klub</div>
-                                        <div class="ms-1"><svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></div>
-                                    </button>
-                                    <div x-show="open" @click.away="open = false" class="absolute z-50 mt-2 w-48 rounded-md shadow-lg origin-top-left left-0 top-full">
-                                        <div class="rounded-md ring-1 ring-black ring-opacity-5 py-1 bg-white">
-                                            <a href="{{ route('klub.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Semua Klub</a>
-                                            @foreach($ligasForMenu as $liga)
-                                                <a href="{{ route('klub.liga', $liga->id) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                    @if($liga->logo)<img src="{{ asset($liga->logo) }}" class="h-5 w-5 object-contain mr-2">@endif
-                                                    <span>{{ $liga->nama }}</span>
-                                                </a>
-                                            @endforeach
-                                        </div>
-                                    </div>
+                                     <button @click="open = ! open" class="inline-flex items-center px-3 pt-1 border-b-2 {{ request()->routeIs('klub.*') ? 'border-green-500' : 'border-transparent' }} text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 focus:outline-none transition">
+                                         <div>Klub</div>
+                                         <div class="ms-1"><svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></div>
+                                     </button>
+                                     <div x-show="open" @click.away="open = false" class="absolute z-50 mt-2 w-48 rounded-md shadow-lg origin-top-left left-0 top-full">
+                                         <div class="rounded-md ring-1 ring-black ring-opacity-5 py-1 bg-white">
+                                             <a href="{{ route('klub.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Semua Klub</a>
+                                             @foreach($ligasForMenu as $liga)
+                                                 <a href="{{ route('klub.liga', $liga->id) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                     @if($liga->logo_url)<img src="{{ $liga->logo_url }}" class="h-5 w-5 object-contain mr-2">@endif
+                                                     <span>{{ $liga->nama }}</span>
+                                                 </a>
+                                             @endforeach
+                                         </div>
+                                     </div>
                                 </div>
                                 
+                                {{-- Dropdown Pemain --}}
                                 <div x-data="{ open: false }" class="relative hidden sm:flex sm:items-center">
-                                    <button @click="open = ! open" class="inline-flex items-center px-3 pt-1 border-b-2 {{ request()->routeIs('pemain.*') ? 'border-green-500' : 'border-transparent' }} text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 focus:outline-none transition">
-                                        <div>Pemain</div>
-                                        <div class="ms-1"><svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></div>
-                                    </button>
-                                    <div x-show="open" @click.away="open = false" class="absolute z-50 mt-2 w-56 rounded-md shadow-lg origin-top-left left-0 top-full">
-                                        <div class="rounded-md ring-1 ring-black ring-opacity-5 py-1 bg-white">
-                                            <a href="{{ route('pemain.index') }}" class="block px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100">Semua Pemain</a>
-                                            @foreach($ligasForMenu as $liga)
-                                                <div x-data="{ openLiga: false }">
-                                                    <button @click="openLiga = ! openLiga" class="w-full text-left flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                        <span class="flex items-center">
-                                                            @if($liga->logo)<img src="{{ asset($liga->logo) }}" class="h-5 w-5 object-contain mr-2">@endif
-                                                            <span>{{ $liga->nama }}</span>
-                                                        </span>
-                                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
-                                                    </button>
-                                                    <div x-show="openLiga" class="pl-4">
-                                                        @foreach($liga->klubs as $klub)
-                                                        <a href="{{ route('pemain.klub', $klub->id) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                            @if($klub->logo)<img src="{{ asset($klub->logo) }}" class="h-5 w-5 object-contain mr-2 rounded-full">@endif
-                                                            <span>{{ $klub->nama }}</span>
-                                                        </a>
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
+                                     <button @click="open = ! open" class="inline-flex items-center px-3 pt-1 border-b-2 {{ request()->routeIs('pemain.*') ? 'border-green-500' : 'border-transparent' }} text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 focus:outline-none transition">
+                                         <div>Pemain</div>
+                                         <div class="ms-1"><svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></div>
+                                     </button>
+                                     <div x-show="open" @click.away="open = false" class="absolute z-50 mt-2 w-56 rounded-md shadow-lg origin-top-left left-0 top-full">
+                                         <div class="rounded-md ring-1 ring-black ring-opacity-5 py-1 bg-white">
+                                             <a href="{{ route('pemain.index') }}" class="block px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100">Semua Pemain</a>
+                                             @foreach($ligasForMenu as $liga)
+                                                 <div x-data="{ openLiga: false }">
+                                                     <button @click="openLiga = ! openLiga" class="w-full text-left flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                         <span class="flex items-center">
+                                                             @if($liga->logo_url)<img src="{{ $liga->logo_url }}" class="h-5 w-5 object-contain mr-2">@endif
+                                                             <span>{{ $liga->nama }}</span>
+                                                         </span>
+                                                         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                                                     </button>
+                                                     <div x-show="openLiga" class="pl-4">
+                                                         @foreach($liga->klubs as $klub)
+                                                         <a href="{{ route('pemain.klub', $klub->id) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                             {{-- ===== PERBAIKAN FINAL ===== --}}
+                                                             @if($klub->logo_url)<img src="{{ $klub->logo_url }}" class="h-5 w-5 object-contain mr-2 rounded-full">@endif
+                                                             <span>{{ $klub->nama }}</span>
+                                                         </a>
+                                                         @endforeach
+                                                     </div>
+                                                 </div>
+                                             @endforeach
+                                         </div>
+                                     </div>
                                 </div>
 
+                                {{-- Dropdown Pertandingan --}}
                                 <div x-data="{ open: false }" class="relative hidden sm:flex sm:items-center">
-                                    <button @click="open = ! open" class="inline-flex items-center px-3 pt-1 border-b-2 {{ request()->routeIs('pertandingan.*') ? 'border-green-500' : 'border-transparent' }} text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 focus:outline-none transition">
-                                        <div>Pertandingan</div>
-                                        <div class="ms-1"><svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></div>
-                                    </button>
-                                    <div x-show="open" @click.away="open = false" class="absolute z-50 mt-2 w-48 rounded-md shadow-lg origin-top-left left-0 top-full">
-                                        <div class="rounded-md ring-1 ring-black ring-opacity-5 py-1 bg-white">
-                                            <a href="{{ route('pertandingan.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Semua Pertandingan</a>
-                                            @foreach($ligasForMenu as $liga)
-                                                <a href="{{ route('pertandingan.liga', $liga->id) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                    @if($liga->logo)<img src="{{ asset($liga->logo) }}" class="h-5 w-5 object-contain mr-2">@endif
-                                                    <span>{{ $liga->nama }}</span>
-                                                </a>
-                                            @endforeach
-                                        </div>
-                                    </div>
+                                     <button @click="open = ! open" class="inline-flex items-center px-3 pt-1 border-b-2 {{ request()->routeIs('pertandingan.*') ? 'border-green-500' : 'border-transparent' }} text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 focus:outline-none transition">
+                                         <div>Pertandingan</div>
+                                         <div class="ms-1"><svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></div>
+                                     </button>
+                                     <div x-show="open" @click.away="open = false" class="absolute z-50 mt-2 w-48 rounded-md shadow-lg origin-top-left left-0 top-full">
+                                         <div class="rounded-md ring-1 ring-black ring-opacity-5 py-1 bg-white">
+                                             <a href="{{ route('pertandingan.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Semua Pertandingan</a>
+                                             @foreach($ligasForMenu as $liga)
+                                                 <a href="{{ route('pertandingan.liga', $liga->id) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                     @if($liga->logo_url)<img src="{{ $liga->logo_url }}" class="h-5 w-5 object-contain mr-2">@endif
+                                                     <span>{{ $liga->nama }}</span>
+                                                 </a>
+                                             @endforeach
+                                         </div>
+                                     </div>
                                 </div>
                                 
+                                {{-- Link Klasemen --}}
                                 <x-nav-link :href="route('klasemen.index')" :active="request()->routeIs('klasemen.*')" class="px-3 {{ request()->routeIs('klasemen.*') ? 'border-green-500' : 'border-transparent' }}">{{ __('Klasemen') }}</x-nav-link>
-
                             </div>
                         </div>
 
+                        {{-- Bagian Kanan Navigasi (Search & Auth) --}}
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
                             <div class="mr-4">
                                 <form action="{{ route('search.index') }}" method="GET">
@@ -119,11 +132,6 @@
                             </div>
                             @auth
                                 <a href="{{ url('/dashboard') }}" class="font-semibold text-gray-600 hover:text-gray-900">Dashboard</a>
-                            @else
-                                <a href="{{ route('login') }}" class="font-semibold text-gray-600 hover:text-gray-900">Log in</a>
-                                @if (Route::has('register'))
-                                    <a href="{{ route('register') }}" class="ml-4 font-semibold text-gray-600 hover:text-gray-900">Register</a>
-                                @endif
                             @endauth
                         </div>
                     </div>
@@ -134,5 +142,10 @@
                 @yield('content')
             </main>
         </div>
+
+        {{-- TAMBAHAN UNTUK SELECT2 (JS) --}}
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        @stack('scripts')
     </body>
 </html>

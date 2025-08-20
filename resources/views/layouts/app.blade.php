@@ -13,6 +13,26 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        {{-- ===== TAMBAHAN UNTUK SELECT2 (CSS) ===== --}}
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <style>
+            .select2-container--default .select2-selection--single {
+                height: 42px;
+                padding-top: 8px;
+                border-color: rgb(209 213 219);
+            }
+            .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 40px;
+            }
+            .select2-results__option .select2-image {
+                width: 25px;
+                height: 25px;
+                margin-right: 10px;
+                object-fit: contain;
+            }
+        </style>
+        {{-- ===== AKHIR TAMBAHAN ===== --}}
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
@@ -32,5 +52,11 @@
                 {{ $slot }}
             </main>
         </div>
+
+        {{-- ===== TAMBAHAN UNTUK SELECT2 (JS) ===== --}}
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        @stack('scripts')
+        {{-- ===== AKHIR TAMBAHAN ===== --}}
     </body>
 </html>

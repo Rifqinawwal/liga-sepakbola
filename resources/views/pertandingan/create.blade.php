@@ -3,12 +3,25 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Buat Jadwal Pertandingan Baru') }}
         </h2>
+
+        {{-- CSS tambahan untuk memperbaiki logo besar setelah dipilih --}}
+        <style>
+            .select2-selection__rendered .select2-image {
+                height: 25px;
+                width: auto;
+                object-fit: contain;
+                display: inline-block;
+                vertical-align: middle;
+                margin-right: 10px;
+                margin-top: -5px;
+            }
+        </style>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+                <div class="p-6 md:p-8 text-gray-900">
 
                     @if ($errors->any())
                         <div class="mb-4 p-4 bg-red-100 text-red-700 border border-red-400 rounded">
@@ -26,10 +39,10 @@
                         <!-- Klub Tuan Rumah -->
                         <div class="mt-4">
                             <x-input-label for="klub_tuan_rumah_id" :value="__('Klub Tuan Rumah')" />
-                            <select name="klub_tuan_rumah_id" id="klub_tuan_rumah_id" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                                <option value="">Pilih Klub</option>
+                            <select name="klub_tuan_rumah_id" id="klub_tuan_rumah_id" class="block mt-1 w-full" required>
+                                <option></option>
                                 @foreach ($klubs as $klub)
-                                    <option value="{{ $klub->id }}" {{ old('klub_tuan_rumah_id') == $klub->id ? 'selected' : '' }}>
+                                    <option value="{{ $klub->id }}" data-logo="{{ asset($klub->logo) }}" {{ old('klub_tuan_rumah_id') == $klub->id ? 'selected' : '' }}>
                                         {{ $klub->nama }}
                                     </option>
                                 @endforeach
@@ -39,33 +52,33 @@
                         <!-- Klub Tamu -->
                         <div class="mt-4">
                             <x-input-label for="klub_tamu_id" :value="__('Klub Tamu')" />
-                            <select name="klub_tamu_id" id="klub_tamu_id" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                                <option value="">Pilih Klub</option>
+                            <select name="klub_tamu_id" id="klub_tamu_id" class="block mt-1 w-full" required>
+                                <option></option>
                                 @foreach ($klubs as $klub)
-                                    <option value="{{ $klub->id }}" {{ old('klub_tamu_id') == $klub->id ? 'selected' : '' }}>
+                                    <option value="{{ $klub->id }}" data-logo="{{ asset($klub->logo) }}" {{ old('klub_tamu_id') == $klub->id ? 'selected' : '' }}>
                                         {{ $klub->nama }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                         
-                        <!-- Stadion -->
-                        <div class="mt-4">
-                            <x-input-label for="stadion" :value="__('Stadion')" />
-                            <x-text-input id="stadion" class="block mt-1 w-full" type="text" name="stadion" :value="old('stadion')" required />
-                        </div>
-
-                        <!-- Liga Pertandingan (BAGIAN YANG DIPERBAIKI) -->
+                        <!-- Liga Pertandingan -->
                         <div class="mt-4">
                             <x-input-label for="liga_id" :value="__('Liga Pertandingan')" />
-                            <select name="liga_id" id="liga_id" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                                <option value="">Pilih Liga</option>
+                            <select name="liga_id" id="liga_id" class="block mt-1 w-full" required>
+                                <option></option>
                                 @foreach ($ligas as $liga)
-                                    <option value="{{ $liga->id }}" {{ old('liga_id') == $liga->id ? 'selected' : '' }}>
+                                    <option value="{{ $liga->id }}" data-logo="{{ asset($liga->logo) }}" {{ old('liga_id') == $liga->id ? 'selected' : '' }}>
                                         {{ $liga->nama }}
                                     </option>
                                 @endforeach
                             </select>
+                        </div>
+
+                        <!-- Stadion -->
+                        <div class="mt-4">
+                            <x-input-label for="stadion" :value="__('Stadion')" />
+                            <x-text-input id="stadion" class="block mt-1 w-full" type="text" name="stadion" :value="old('stadion')" required />
                         </div>
 
                         <!-- Tanggal Pertandingan -->
@@ -80,7 +93,7 @@
                             <x-text-input id="waktu" class="block mt-1 w-full" type="time" name="waktu" :value="old('waktu')" required />
                         </div>
 
-                        <div class="flex items-center justify-end mt-4">
+                        <div class="flex items-center justify-end mt-6">
                             <a href="{{ route('pertandingan.index') }}" class="text-sm text-gray-600 hover:text-gray-900 mr-4">Batal</a>
                             <x-primary-button>
                                 {{ __('Simpan Jadwal') }}
@@ -91,4 +104,42 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        $(document).ready(function() {
+            // Fungsi format untuk klub
+            function formatClub (club) {
+                if (!club.id) { return club.text; }
+                var logoPath = $(club.element).data('logo');
+                if (!logoPath) { return club.text; }
+                var $club = $('<span><img src="' + logoPath + '" class="select2-image" /> ' + club.text + '</span>');
+                return $club;
+            };
+
+            // Fungsi format untuk liga
+            function formatLiga (liga) {
+                if (!liga.id) { return liga.text; }
+                var logoPath = $(liga.element).data('logo');
+                if (!logoPath) { return liga.text; }
+                var $liga = $('<span><img src="' + logoPath + '" class="select2-image" /> ' + liga.text + '</span>');
+                return $liga;
+            };
+
+            // Terapkan Select2 pada dropdown klub
+            $('#klub_tuan_rumah_id, #klub_tamu_id').select2({
+                placeholder: "Pilih Klub",
+                templateResult: formatClub,
+                templateSelection: formatClub
+            });
+
+            // Terapkan Select2 pada dropdown liga
+            $('#liga_id').select2({
+                placeholder: "Pilih Liga",
+                templateResult: formatLiga,
+                templateSelection: formatLiga
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>
