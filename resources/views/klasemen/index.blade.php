@@ -11,7 +11,7 @@
                     </h2>
 
                     <div x-data="{ open: false }" class="relative mb-4">
-                        <button @click="open = ! open" class="w-full sm:w-64 flex items-center justify-between text-left bg-white border border-gray-300 rounded-md shadow-sm px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <button @click="open = ! open" class="w-full sm:w-64 flex items-center justify-between text-left bg-white border border-gray-300 rounded-md shadow-sm px-4 py-2 text-sm font-medium text-gray-700 hover:bg-green-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-900">
                             <span>
                                 @if($selectedLigaId && $ligas->firstWhere('id', $selectedLigaId))
                                     <div class="flex items-center">
@@ -29,9 +29,9 @@
 
                         <div x-show="open" @click.away="open = false" class="absolute z-10 mt-2 w-full sm:w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5" style="display: none;">
                             <div class="py-1">
-                                <a href="{{ route('klasemen.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Semua Liga</a>
+                                <a href="{{ route('klasemen.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-900 hover:text-white">Semua Liga</a>
                                 @foreach ($ligas as $liga)
-                                    <a href="{{ route('klasemen.index', ['liga_id' => $liga->id]) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <a href="{{ route('klasemen.index', ['liga_id' => $liga->id]) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-green-900 hover:text-white">
                                         @if($liga->logo_url)
                                             <img src="{{ $liga->logo_url }}" alt="{{ $liga->nama }}" class="h-5 w-5 object-contain mr-2">
                                         @endif
@@ -43,48 +43,45 @@
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
-                                    <th class="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pos</th>
-                                    <th colspan="2" class="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Klub</th>
-                                    <th class="px-2 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">P</th>
-                                    <th class="px-2 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">W</th>
-                                    <th class="px-2 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">D</th>
-                                    <th class="px-2 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">L</th>
-                                    <th class="px-2 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">GF</th>
-                                    <th class="px-2 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">GA</th>
-                                    <th class="px-2 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">GD</th>
-                                    <th class="px-2 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Pts</th>
+                                    <th scope="col" class="px-6 py-3">Pos</th>
+                                    <th scope="col" class="px-6 py-3">Klub</th>
+                                    <th scope="col" class="px-6 py-3 text-center">P</th>
+                                    <th scope="col" class="px-6 py-3 text-center">W</th>
+                                    <th scope="col" class="px-6 py-3 text-center">D</th>
+                                    <th scope="col" class="px-6 py-3 text-center">L</th>
+                                    <th scope="col" class="px-6 py-3 text-center">GF</th>
+                                    <th scope="col" class="px-6 py-3 text-center">GA</th>
+                                    <th scope="col" class="px-6 py-3 text-center">GD</th>
+                                    <th scope="col" class="px-6 py-3 text-center">Pts</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody>
                                 @forelse ($klasemen as $index => $data)
-                                    <tr>
-                                        <td class="px-2 md:px-6 py-4 text-center">{{ $index + 1 }}</td>
-                                        <td class="px-2 py-4">
-                                            @if($data['logo_klub'])
-                                                @php
-                                                    $logoKlubUrl = \Illuminate\Support\Str::startsWith($data['logo_klub'], 'logo_klub/')
-                                                                    ? asset('storage/' . $data['logo_klub'])
-                                                                    : asset($data['logo_klub']);
-                                                @endphp
-                                                <img src="{{ $logoKlubUrl }}" alt="{{ $data['nama_klub'] }}" class="h-8 w-8 object-contain">
-                                            @endif
+                                    <tr class="bg-white border-b">
+                                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ $index + 1 }}</td>
+                                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                            <div class="flex items-center space-x-2">
+                                                @if($data['logo_klub'])
+                                                    <img src="{{ asset($data['logo_klub']) }}" alt="{{ $data['nama_klub'] }}" class="h-6 w-6 object-contain">
+                                                @endif
+                                                <span>{{ $data['nama_klub'] }}</span>
+                                            </div>
                                         </td>
-                                        <td class="px-2 md:px-6 py-4 font-medium text-gray-900">{{ $data['nama_klub'] }}</td>
-                                        <td class="px-2 md:px-6 py-4 text-center">{{ $data['main'] }}</td>
-                                        <td class="px-2 md:px-6 py-4 text-center">{{ $data['menang'] }}</td>
-                                        <td class="px-2 md:px-6 py-4 text-center">{{ $data['seri'] }}</td>
-                                        <td class="px-2 md:px-6 py-4 text-center">{{ $data['kalah'] }}</td>
-                                        <td class="px-2 md:px-6 py-4 text-center">{{ $data['gol_masuk'] }}</td>
-                                        <td class="px-2 md:px-6 py-4 text-center">{{ $data['gol_kalah'] }}</td>
-                                        <td class="px-2 md:px-6 py-4 text-center">{{ $data['selisih_gol'] }}</td>
-                                        <td class="px-2 md:px-6 py-4 text-center font-bold">{{ $data['poin'] }}</td>
+                                        <td class="px-6 py-4 text-center">{{ $data['main'] }}</td>
+                                        <td class="px-6 py-4 text-center">{{ $data['menang'] }}</td>
+                                        <td class="px-6 py-4 text-center">{{ $data['seri'] }}</td>
+                                        <td class="px-6 py-4 text-center">{{ $data['kalah'] }}</td>
+                                        <td class="px-6 py-4 text-center">{{ $data['gol_masuk'] }}</td>
+                                        <td class="px-6 py-4 text-center">{{ $data['gol_kalah'] }}</td>
+                                        <td class="px-6 py-4 text-center">{{ $data['selisih_gol'] }}</td>
+                                        <td class="px-6 py-4 text-center font-bold">{{ $data['poin'] }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="11" class="px-6 py-4 text-center text-sm text-gray-500">
+                                        <td colspan="10" class="px-6 py-4 text-center">
                                             Belum ada pertandingan yang selesai untuk menghitung klasemen.
                                         </td>
                                     </tr>

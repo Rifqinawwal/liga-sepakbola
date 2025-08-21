@@ -1,7 +1,6 @@
 import defaultTheme from "tailwindcss/defaultTheme";
 import forms from "@tailwindcss/forms";
-
-const defaultTheme = require("tailwindcss/defaultTheme");
+import colors from "tailwindcss/colors"; // <-- Pastikan ini ada
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -17,8 +16,13 @@ export default {
                 sans: ["Figtree", ...defaultTheme.fontFamily.sans],
                 poppins: ["Poppins", "sans-serif"],
             },
+            colors: {
+                // Gunakan variabel 'colors' yang sudah di-import
+                indigo: colors.white,
+            },
         },
     },
 
+    // Gunakan variabel 'forms' yang sudah di-import
     plugins: [forms],
 };
