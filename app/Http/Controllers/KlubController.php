@@ -13,10 +13,17 @@ class KlubController extends Controller
      * Menampilkan daftar semua klub.
      */
     public function index()
-    {
-        $klubs = Klub::latest()->paginate(10); // Ambil semua klub, urutkan dari terbaru
-        return view('klub.index', compact('klubs'));
+{
+    if (request()->wantsJson()) {
+        // Untuk API, ambil semua data tanpa paginasi
+        $klubs = Klub::with('liga')->latest()->get();
+        return response()->json($klubs);
     }
+    
+    // Untuk tampilan web, gunakan paginasi
+    $klubs = Klub::with('liga')->latest()->paginate(10);
+    return view('klub.index', compact('klubs'));
+}
 
     /**
      * Menampilkan form untuk membuat klub baru.
